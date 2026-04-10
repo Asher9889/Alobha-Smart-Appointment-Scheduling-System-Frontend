@@ -1,4 +1,5 @@
 import { type Appointment, type Slot } from '../types';
+import { useAuth } from '../context/AuthContext';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { motion } from 'framer-motion';
@@ -10,6 +11,7 @@ interface MyAppointmentsProps {
 }
 
 export default function MyAppointments({ appointments, slots, onCancel }: MyAppointmentsProps) {
+  const { user: currentUser } = useAuth();
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
@@ -27,15 +29,15 @@ export default function MyAppointments({ appointments, slots, onCancel }: MyAppo
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {appointments.map((apt) => {
-            const slot = slots.find((s) => s.id === apt.slotId);
-            if (!slot) return null;
-
-            const dateObj = new Date(slot.date);
+            const dateObj = new Date(apt.date);
             const dateDisplay = dateObj.toLocaleDateString(undefined, {
               weekday: 'long',
               month: 'long',
               day: 'numeric',
             });
+
+            const start = new Date(apt.startTime).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+            const end = new Date(apt.endTime).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
 
             return (
               <motion.div
@@ -57,9 +59,19 @@ export default function MyAppointments({ appointments, slots, onCancel }: MyAppo
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-muted-foreground">Time:</span>
                       <span className="font-medium">
-                        {slot.startTime} - {slot.endTime}
+                        {start} - {end}
                       </span>
                     </div>
+                            {apt.bookedBy && (
+                              <div className="flex justify-between items-center">
+                                <span className="text-sm text-muted-foreground">Booked By:</span>
+                                <span className="font-medium">
+                                  { // Prefer a provided name, then current user's name when ids match, otherwise show id
+                                    (apt as any).bookedByName || (currentUser && currentUser.id === apt.bookedBy ? currentUser.name : apt.bookedBy)
+                                  }
+                                </span>
+                              </div>
+                            )}
                   </CardContent>
                   <CardFooter>
                     <Button

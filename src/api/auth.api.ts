@@ -6,6 +6,10 @@ export const endPoints = {
       url: '/auth/login',
       method: 'POST',
     },
+    register: {
+      url: '/auth/register',
+      method: 'POST',
+    },
   },
 } as const;
 
@@ -30,6 +34,19 @@ export interface LoginResponse {
   };
 }
 
+export interface RegisterParams {
+  name: string;
+  email: string;
+  password: string;
+}
+
+export interface RegisterResponse {
+  success: boolean;
+  statusCode: number;
+  message: string;
+  data: User;
+}
+
 export interface ApiErrorResponse {
   success: boolean;
   statusCode: number;
@@ -39,6 +56,16 @@ export interface ApiErrorResponse {
 
 export const loginUser = async (params: LoginParams): Promise<LoginResponse> => {
   const { url, method } = endPoints.auth.login;
+  const response = await axiosInstance({
+    url,
+    method,
+    data: params,
+  });
+  return response.data;
+};
+
+export const registerUser = async (params: RegisterParams): Promise<RegisterResponse> => {
+  const { url, method } = endPoints.auth.register;
   const response = await axiosInstance({
     url,
     method,

@@ -10,23 +10,29 @@ import { Toaster } from './components/ui/sonner';
 
 import { initialSlots } from './data/dummySlots';
 import { initialAppointments } from './data/dummyAppointments';
+import { useAppointments } from './hooks/useAppointments';
 import type { Slot, Appointment } from './types';
 
 function App() {
   const [slots, setSlots] = useState<Slot[]>(initialSlots);
-  const [appointments, setAppointments] = useState<Appointment[]>(initialAppointments);
+  const { data: appointmentsResp } = useAppointments();
+  const backendAppointments = appointmentsResp?.data || initialAppointments;
 
   const handleCancel = (appointmentId: string) => {
-    const appointmentToCancel = appointments.find((apt) => apt.id === appointmentId);
+    const currentAppointments = backendAppointments;
+    const appointmentToCancel = currentAppointments.find((apt: any) => apt.id === appointmentId);
     if (!appointmentToCancel) return;
 
     // 1. Remove from appointments
     setAppointments((prev) => prev.filter((apt) => apt.id !== appointmentId));
 
     // 2. Update slot to be available again
+    // Try to find matching slot by date & startTime to free it up locally
     setSlots((prevSlots) =>
       prevSlots.map((slot) =>
-        slot.id === appointmentToCancel.slotId ? { ...slot, isBooked: false } : slot
+        slot.date === appointmentToCancel.date && slot.startTime === appointmentToCancel.startTime
+          ? { ...slot, isBooked: false }
+          : slot
       )
     );
   };
@@ -42,9 +48,9 @@ function App() {
           
           <Route element={<ProtectedRoute />}>
             <Route path="/slots" element={<Slots />} />
-            <Route 
-              path="/appointments" 
-              element={<MyAppointments appointments={appointments} slots={slots} onCancel={handleCancel} />} 
+            <Route
+              path="/appointments"
+              element={<MyAppointments appointments={backendAppointments} slots={slots} onCancel={handleCancel} />}
             />
           </Route>
         </Routes>
