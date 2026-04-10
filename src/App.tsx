@@ -5,6 +5,7 @@ import Slots from './pages/Slots';
 import MyAppointments from './pages/MyAppointments';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import ProtectedRoute from './components/ProtectedRoute';
 
 import { initialSlots } from './data/dummySlots';
 import { initialAppointments } from './data/dummyAppointments';
@@ -53,13 +54,16 @@ function App() {
       <main className="flex-1">
         <Routes>
           <Route path="/" element={<Navigate to="/slots" replace />} />
-          <Route path="/slots" element={<Slots slots={slots} onBook={handleBook} />} />
-          <Route 
-            path="/appointments" 
-            element={<MyAppointments appointments={appointments} slots={slots} onCancel={handleCancel} />} 
-          />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          
+          <Route element={<ProtectedRoute />}>
+            <Route path="/slots" element={<Slots onBook={handleBook} />} />
+            <Route 
+              path="/appointments" 
+              element={<MyAppointments appointments={appointments} slots={slots} onCancel={handleCancel} />} 
+            />
+          </Route>
         </Routes>
       </main>
     </div>
