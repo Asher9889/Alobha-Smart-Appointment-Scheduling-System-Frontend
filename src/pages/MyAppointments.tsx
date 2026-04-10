@@ -1,5 +1,6 @@
 import { type Appointment, type Slot } from '../types';
 import { useAuth } from '../context/AuthContext';
+import { useCancelAppointment } from '../hooks/useCancelAppointment';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { motion } from 'framer-motion';
@@ -12,6 +13,7 @@ interface MyAppointmentsProps {
 
 export default function MyAppointments({ appointments, slots, onCancel }: MyAppointmentsProps) {
   const { user: currentUser } = useAuth();
+  const { mutate: cancel, isLoading: isCancelling } = useCancelAppointment();
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
@@ -77,9 +79,10 @@ export default function MyAppointments({ appointments, slots, onCancel }: MyAppo
                     <Button
                       variant="destructive"
                       className="w-full"
-                      onClick={() => onCancel(apt.id)}
+                      onClick={() => cancel(apt.id, { onSuccess: () => onCancel && onCancel(apt.id) })}
+                      disabled={isCancelling}
                     >
-                      Cancel Appointment
+                      {isCancelling ? 'Cancelling...' : 'Cancel Appointment'}
                     </Button>
                   </CardFooter>
                 </Card>

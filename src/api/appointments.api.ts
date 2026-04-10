@@ -72,3 +72,18 @@ export const getAppointments = async (): Promise<GetAppointmentsResponse> => {
   });
   return response.data;
 };
+
+export interface CancelAppointmentResponse {
+  success: boolean;
+  statusCode: number;
+  message: string;
+  data: any;
+}
+
+export const cancelAppointment = async (slotId: string): Promise<CancelAppointmentResponse> => {
+  const response = await axiosInstance({
+    url: `/appointments/${slotId}`,
+    method: 'DELETE',
+  });
+  return response.data;
+};
