@@ -2,14 +2,11 @@ import { useState } from 'react';
 import type { Slot } from '../types';
 import SlotCard from '../components/SlotCard';
 import { useSlots } from '../hooks/useSlots';
+import { useBookSlot } from '../hooks/useBookSlot';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 
-interface SlotsProps {
-  onBook: (slotId: string) => void;
-}
-
-export default function Slots({ onBook }: SlotsProps) {
+export default function Slots() {
   // Default to today
   const [selectedDate, setSelectedDate] = useState<string>(() => {
     const today = new Date();
@@ -17,6 +14,7 @@ export default function Slots({ onBook }: SlotsProps) {
   });
 
   const { data, isLoading, isError, error } = useSlots(selectedDate);
+  const { mutate: bookSlot } = useBookSlot();
 
   // Read slots from our actual real API response payload
   const realSlots = data?.data || [];
@@ -63,9 +61,12 @@ export default function Slots({ onBook }: SlotsProps) {
           )}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {!isLoading && realSlots.map((slot: Slot) => (
-              <SlotCard key={slot.id} slot={slot} onBook={onBook} />
-            ))}
+            {!isLoading && realSlots.map((slot: Slot) => {
+              const uniqueIdentifier = slot._id || slot.id;
+              return (
+                <SlotCard key={uniqueIdentifier} slot={slot} onBook={(id) => bookSlot({ slotId: id })} />
+              );
+            })}
           </div>
         </section>
       </div>

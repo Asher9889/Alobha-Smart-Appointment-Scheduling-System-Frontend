@@ -63,7 +63,7 @@ export default function SlotCard({ slot, onBook }: SlotCardProps) {
             className="w-full"
             variant={slot.isBooked ? "secondary" : "default"}
             disabled={slot.isBooked}
-            onClick={() => onBook(slot.id)}
+            onClick={() => onBook(slot._id || slot.id)}
           >
             {slot.isBooked ? 'Unavailable' : 'Book'}
           </Button>

@@ -23,6 +23,11 @@ export const getAvailableSlots = async (date: string): Promise<GetSlotsResponse>
     url,
     method,
     params: { date },
+    headers: {
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+    }
   });
   return response.data;
 };

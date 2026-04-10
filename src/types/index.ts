@@ -1,5 +1,6 @@
 export interface Slot {
   id: string;
+  _id?: string;
   date: string;
   startTime: string;
   endTime: string;

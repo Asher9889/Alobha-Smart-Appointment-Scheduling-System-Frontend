@@ -5,6 +5,7 @@ export const useSlots = (date: string) => {
   return useQuery({
     queryKey: ['slots', date],
     queryFn: () => getAvailableSlots(date),
-    staleTime: 60 * 1000, // 1 minute
+    staleTime: 0,
+    gcTime: 0,
   });
 };

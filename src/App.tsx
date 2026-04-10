@@ -6,6 +6,7 @@ import MyAppointments from './pages/MyAppointments';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ProtectedRoute from './components/ProtectedRoute';
+import { Toaster } from './components/ui/sonner';
 
 import { initialSlots } from './data/dummySlots';
 import { initialAppointments } from './data/dummyAppointments';
@@ -14,24 +15,6 @@ import type { Slot, Appointment } from './types';
 function App() {
   const [slots, setSlots] = useState<Slot[]>(initialSlots);
   const [appointments, setAppointments] = useState<Appointment[]>(initialAppointments);
-
-  const handleBook = (slotId: string) => {
-    // 1. Update slot to be booked
-    setSlots((prevSlots) =>
-      prevSlots.map((slot) =>
-        slot.id === slotId ? { ...slot, isBooked: true } : slot
-      )
-    );
-
-    // 2. Add to appointments
-    const newAppointment: Appointment = {
-      id: `apt-${Date.now()}`,
-      slotId: slotId,
-      userId: 'user-dummy', // mock user logic
-      createdAt: new Date().toISOString(),
-    };
-    setAppointments((prev) => [...prev, newAppointment]);
-  };
 
   const handleCancel = (appointmentId: string) => {
     const appointmentToCancel = appointments.find((apt) => apt.id === appointmentId);
@@ -58,7 +41,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           
           <Route element={<ProtectedRoute />}>
-            <Route path="/slots" element={<Slots onBook={handleBook} />} />
+            <Route path="/slots" element={<Slots />} />
             <Route 
               path="/appointments" 
               element={<MyAppointments appointments={appointments} slots={slots} onCancel={handleCancel} />} 
@@ -66,6 +49,7 @@ function App() {
           </Route>
         </Routes>
       </main>
+      <Toaster position="top-right" richColors />
     </div>
   );
 }
